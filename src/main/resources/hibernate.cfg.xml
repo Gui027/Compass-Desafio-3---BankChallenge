@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "https://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- Configurações do banco de dados -->
+        <!-- Corrigindo a URL para o Session Pooler -->
+        <property name="hibernate.connection.url">jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:5432/postgres</property>
+        <property name="hibernate.connection.username">postgres.plqjqfwdghxonmhbfveu</property> <!-- Usuário correto -->
+        <property name="hibernate.connection.password">bancodacompass</property> <!-- Substitua pela senha real -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+
+        <!-- Dialeto do Hibernate para PostgreSQL -->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- Mostrar SQL no console -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Atualizar o esquema do banco automaticamente -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+    </session-factory>
+</hibernate-configuration>

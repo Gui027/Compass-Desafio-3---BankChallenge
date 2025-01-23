@@ -1,16 +1,41 @@
 package br.com.compass;
 
 import java.util.Scanner;
+import br.com.compass.model.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 public class App {
-    
+
     public static void main(String[] args) {
+        // Configurar e inicializar o Hibernate
+        initializeDatabase();
+
+        // Scanner para entrada do usuário
         Scanner scanner = new Scanner(System.in);
 
         mainMenu(scanner);
-        
+
         scanner.close();
         System.out.println("Application closed");
+    }
+
+    public static void initializeDatabase() {
+        // Configuração do Hibernate
+        Configuration configuration = new Configuration();
+        configuration.configure("hibernate.cfg.xml");
+        configuration.addAnnotatedClass(User.class);
+
+        try (SessionFactory sessionFactory = configuration.buildSessionFactory();
+             Session session = sessionFactory.openSession()) {
+
+            System.out.println("Conexão com o banco de dados estabelecida!");
+            System.out.println("Tabela 'users' criada/atualizada no banco de dados.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Erro ao inicializar o banco de dados.");
+        }
     }
 
     public static void mainMenu(Scanner scanner) {
@@ -31,7 +56,6 @@ public class App {
                     bankMenu(scanner);
                     return;
                 case 2:
-                    // ToDo...
                     System.out.println("Account Opening.");
                     break;
                 case 0:
@@ -61,27 +85,21 @@ public class App {
 
             switch (option) {
                 case 1:
-                    // ToDo...
                     System.out.println("Deposit.");
                     break;
                 case 2:
-                    // ToDo...
                     System.out.println("Withdraw.");
                     break;
                 case 3:
-                    // ToDo...
                     System.out.println("Check Balance.");
                     break;
                 case 4:
-                    // ToDo...
                     System.out.println("Transfer.");
                     break;
                 case 5:
-                    // ToDo...
                     System.out.println("Bank Statement.");
                     break;
                 case 0:
-                    // ToDo...
                     System.out.println("Exiting...");
                     running = false;
                     return;
@@ -90,5 +108,4 @@ public class App {
             }
         }
     }
-    
 }
