@@ -5,9 +5,10 @@
     <session-factory>
         <!-- Configurações do banco de dados -->
         <!-- Corrigindo a URL para o Session Pooler -->
-        <property name="hibernate.connection.url">jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:5432/postgres</property>
-        <property name="hibernate.connection.username">postgres.plqjqfwdghxonmhbfveu</property> <!-- Usuário correto -->
-        <property name="hibernate.connection.password">bancodacompass</property> <!-- Substitua pela senha real -->
+        <property name="hibernate.connection.url">
+            jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:5432/postgres</property>
+        <property name="hibernate.connection.username">postgres.plqjqfwdghxonmhbfveu</property>
+        <property name="hibernate.connection.password">bancodacompass</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
 
         <!-- Dialeto do Hibernate para PostgreSQL -->
@@ -19,5 +20,8 @@
 
         <!-- Atualizar o esquema do banco automaticamente -->
         <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Mapeamento da classe User -->
+        <mapping class="br.com.compass.model.User" />
     </session-factory>
 </hibernate-configuration>
