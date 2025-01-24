@@ -11,7 +11,7 @@ public class UserDAO {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.save(user);
+            session.persist(user);
             transaction.commit();
             return true;
         } catch (Exception e) {

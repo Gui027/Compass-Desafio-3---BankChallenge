@@ -67,6 +67,7 @@ public class App {
         }
     }
 
+    
     public static void bankMenu(Scanner scanner) {
         boolean running = true;
 
