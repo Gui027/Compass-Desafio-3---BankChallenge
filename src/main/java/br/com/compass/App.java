@@ -19,7 +19,8 @@ public class App {
         // Scanner para entrada do usuário
         Scanner scanner = new Scanner(System.in);
 
-        mainMenu(scanner);
+        User user = null; // Initialize user as null
+        mainMenu(scanner, user);
 
         scanner.close();
         System.out.println("Application closed");
@@ -42,7 +43,7 @@ public class App {
         }
     }
 
-    public static void mainMenu(Scanner scanner) {
+    public static void mainMenu(Scanner scanner, User user) {
         boolean running = true;
 
         while (running) {
@@ -59,7 +60,7 @@ public class App {
 
             switch (option) {
                 case 1:
-                    bankMenu(scanner);
+                    login(scanner);
                     return;
                 case 2:
                     System.out.println("Account Opening.");
@@ -72,6 +73,28 @@ public class App {
                     System.out.println("Invalid option! Please try again.");
                     break;
             }
+        }
+    }
+
+    public static void login(Scanner scanner) {
+        try {
+            System.out.println("=== Login ===");
+
+            System.out.print("Enter your CPF: ");
+            String cpf = scanner.nextLine();
+
+            UserDAO userDAO = new UserDAO();
+            User user = userDAO.getUserByCpf(cpf);
+
+            if (user != null) {
+                System.out.println("Login successful!");
+                bankMenu(scanner, user);
+            } else {
+                System.out.println("Login failed. Please try again.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while logging in. Please try again.");
         }
     }
 
@@ -126,7 +149,7 @@ public class App {
         }
     }
 
-    public static void bankMenu(Scanner scanner) {
+    public static void bankMenu(Scanner scanner, User user) {
         boolean running = true;
 
         while (running) {

@@ -25,4 +25,19 @@ public class UserDAO {
             session.close();
         }
     }
+
+    public User getUserByCpf(String cpf) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+
+        try {
+            return session.createQuery("FROM User WHERE cpf = :cpf", User.class)
+                    .setParameter("cpf", cpf)
+                    .uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            session.close();
+        }
+    }
 }
