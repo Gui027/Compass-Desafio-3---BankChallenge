@@ -140,6 +140,7 @@ public class App {
 
             if (success) {
                 System.out.println("Account created successfully!");
+                bankMenu(scanner, user);
             } else {
                 System.out.println("Error creating account. Please try again.");
             }
@@ -153,7 +154,7 @@ public class App {
         boolean running = true;
 
         while (running) {
-            System.out.println("========= Bank Menu =========");
+            System.out.println("========= Bank Menu ========= User: " + user.getName());
             System.out.println("|| 1. Deposit              ||");
             System.out.println("|| 2. Withdraw             ||");
             System.out.println("|| 3. Check Balance        ||");
