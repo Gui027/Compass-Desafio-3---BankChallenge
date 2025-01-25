@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import br.com.compass.model.User;
 import br.com.compass.dao.UserDAO;
+import br.com.compass.dao.TransactionDAO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -150,6 +151,11 @@ public class App {
         }
     }
 
+    // public double getBalanceByCpf(String cpf) {
+       
+    // }
+    
+
     public static void bankMenu(Scanner scanner, User user) {
         boolean running = true;
 
@@ -176,6 +182,9 @@ public class App {
                     break;
                 case 3:
                     System.out.println("Check Balance.");
+                    TransactionDAO transactionDAO = new TransactionDAO();
+                    double balance = transactionDAO.getLastBalanceByUserId(user.getId());
+                    System.out.println("Your current balance is: " + balance);
                     break;
                 case 4:
                     System.out.println("Transfer.");

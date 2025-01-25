@@ -25,6 +25,9 @@ public class Transaction {
     @Column(nullable = false)
     private Date transactionDate;
 
+    @Column(nullable = false)
+    private double balance;
+
     public Transaction() {
         this.transactionDate = new Date(); // setando a data da transação para data atual.
     }
@@ -61,6 +64,14 @@ public class Transaction {
         this.type = type;
     }
 
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+    
     public Date getTransactionDate() {
         return transactionDate;
     }

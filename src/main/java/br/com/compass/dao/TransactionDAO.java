@@ -29,35 +29,28 @@ public class TransactionDAO {
         }
     }
 
-    // Método para recuperar todas as transações de um usuário
-    public List<Transaction> getTransactionsByUserId(int userId) {
+    // Método para ver o saldo
+    public double getLastBalanceByUserId(int userId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-
         try {
-            return session.createQuery("FROM Transaction WHERE user.id = :userId", Transaction.class)
-                    .setParameter("userId", userId)
-                    .list();
+            // Consultar a última transação do usuário com o saldo mais recente
+            String hql = "SELECT T.balance FROM Transaction T WHERE T.user.id = :userId ORDER BY T.transactionDate DESC";
+            List<Double> result = session.createQuery(hql, Double.class)
+                                         .setParameter("userId", userId)
+                                         .setMaxResults(1) // Pega apenas a última transação
+                                         .getResultList();
+            
+            if (!result.isEmpty()) {
+                return result.get(0); // Retorna o saldo da última transação
+            } else {
+                return 0.0; // Caso não haja transações, saldo é 0
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return 0.0;
         } finally {
             session.close();
         }
     }
-
-    // Método para recuperar transações específicas, por exemplo, por tipo de transação
-    public List<Transaction> getTransactionsByType(String transactionType) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-
-        try {
-            return session.createQuery("FROM Transaction WHERE transactionType = :transactionType", Transaction.class)
-                    .setParameter("transactionType", transactionType)
-                    .list();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            session.close();
-        }
-    }
+    
 }
