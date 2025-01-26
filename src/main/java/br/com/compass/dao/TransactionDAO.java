@@ -132,4 +132,20 @@ public class TransactionDAO {
         }
     }
 
+    // Método para obter todas as transações de um usuário
+    public List<Transaction> getTransactionsByUserId(int userId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            String hql = "FROM Transaction T WHERE T.user.id = :userId ORDER BY T.transactionDate DESC";
+            return session.createQuery(hql, Transaction.class)
+                    .setParameter("userId", userId)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            session.close();
+        }
+    }
+
 }

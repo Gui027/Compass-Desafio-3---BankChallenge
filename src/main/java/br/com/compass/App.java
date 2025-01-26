@@ -2,8 +2,10 @@ package br.com.compass;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
+import br.com.compass.model.Transaction;
 import br.com.compass.model.User;
 import br.com.compass.dao.UserDAO;
 import br.com.compass.dao.TransactionDAO;
@@ -208,6 +210,28 @@ public class App {
 
     }
 
+    public static void extract(Scanner scanner, User user) {
+        System.out.println("=== Bank Statement ===");
+    TransactionDAO transactionDAO = new TransactionDAO();
+    List<Transaction> transactions = transactionDAO.getTransactionsByUserId(user.getId());
+
+    if (transactions == null || transactions.isEmpty()) {
+        System.out.println("No transactions found for this account.");
+        return;
+    }
+
+    System.out.println("Date\t\t\tType\t\tAmount\t\tBalance");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    for (Transaction transaction : transactions) {
+        String date = dateFormat.format(transaction.getTransactionDate());
+        String type = transaction.getType();
+        double amount = transaction.getAmount();
+        double balance = transaction.getBalance();
+        System.out.printf("%s\t%s\t%.2f\t\t%.2f%n", date, type, amount, balance);
+    }
+    }
+
     public static void bankMenu(Scanner scanner, User user) {
         boolean running = true;
 
@@ -245,6 +269,7 @@ public class App {
                     break;
                 case 5:
                     System.out.println("Bank Statement.");
+                    extract(scanner, user);
                     break;
                 case 0:
                     System.out.println("Exiting...");
