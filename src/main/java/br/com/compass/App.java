@@ -150,11 +150,31 @@ public class App {
             System.err.println("An error occurred while opening the account. Please try again.");
         }
     }
-
-    // public double getBalanceByCpf(String cpf) {
-       
-    // }
     
+    public static void deposit(Scanner scanner, User user) {
+        System.out.println("=== Deposit ===");
+        try {
+            System.out.print("Enter the amount to deposit:");
+            double amount = scanner.nextDouble();
+
+            if (amount <= 0) {
+                System.out.println("Invalid amount. Deposit amount must be greater than 0.");
+                return;
+            }
+
+            TransactionDAO transactionDAO = new TransactionDAO();
+            boolean success = transactionDAO.deposit(user.getId(), amount);
+
+            if (success) {
+                System.out.println("Deposit successful!");
+            } else {
+                System.out.println("Error depositing. Please try again.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while depositing. Please try again.");
+        }
+    }
 
     public static void bankMenu(Scanner scanner, User user) {
         boolean running = true;
@@ -176,6 +196,7 @@ public class App {
             switch (option) {
                 case 1:
                     System.out.println("Deposit.");
+                    deposit(scanner, user);
                     break;
                 case 2:
                     System.out.println("Withdraw.");

@@ -1,9 +1,11 @@
 package br.com.compass.dao;
 
 import br.com.compass.model.Transaction;
+import br.com.compass.model.User;
 import br.com.compass.util.HibernateUtil;
 import org.hibernate.Session;
 
+import java.util.Date;
 import java.util.List;
 
 public class TransactionDAO {
@@ -53,4 +55,42 @@ public class TransactionDAO {
         }
     }
     
+    // Método para fazer o depósito
+    public boolean deposit(int userId, double amount) {
+    Session session = HibernateUtil.getSessionFactory().openSession();
+    org.hibernate.Transaction tx = null;
+
+    try {
+        tx = session.beginTransaction();
+
+        // Buscar o saldo atual
+        double currentBalance = getLastBalanceByUserId(userId);
+
+        // Calcular o novo saldo
+        double newBalance = currentBalance + amount;
+
+        // Criar uma nova transação
+        Transaction transaction = new Transaction();
+        transaction.setUser(session.get(User.class, userId)); // Associar ao usuário
+        transaction.setAmount(amount);
+        transaction.setBalance(newBalance);
+        transaction.setType("Deposit"); // Tipo de transação
+        transaction.setTransactionDate(new Date()); // Data atual
+
+        // Salvar a transação
+        session.save(transaction);
+
+        tx.commit();
+        return true;
+    } catch (Exception e) {
+        if (tx != null) {
+            tx.rollback();
+        }
+        e.printStackTrace();
+        return false;
+    } finally {
+        session.close();
+    }
+}
+
 }
