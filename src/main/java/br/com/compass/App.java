@@ -150,7 +150,7 @@ public class App {
             System.err.println("An error occurred while opening the account. Please try again.");
         }
     }
-    
+
     public static void deposit(Scanner scanner, User user) {
         System.out.println("=== Deposit ===");
         try {
@@ -174,6 +174,38 @@ public class App {
             e.printStackTrace();
             System.err.println("An error occurred while depositing. Please try again.");
         }
+    }
+
+    public static void withdraw(Scanner scanner, User user) {
+        System.out.println("=== Withdraw ===");
+        try {
+            System.out.print("Enter the amount to withdraw:");
+            double amount = scanner.nextDouble();
+            double balance = new TransactionDAO().getLastBalanceByUserId(user.getId());
+
+            if (amount <= 0) {
+                System.out.println("Invalid amount. Deposit amount must be greater than 0.");
+                return;
+            }
+
+            if (amount > balance) {
+                System.out.println("Insufficient funds. Please try again.");
+                return;
+            }
+
+            TransactionDAO transactionDAO = new TransactionDAO();
+            boolean success = transactionDAO.withdraw(user.getId(), amount);
+
+            if (success) {
+                System.out.println("Withdraw successful!");
+            } else {
+                System.out.println("Error withdrawing. Please try again.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while withdrawing. Please try again.");
+        }
+
     }
 
     public static void bankMenu(Scanner scanner, User user) {
@@ -200,6 +232,7 @@ public class App {
                     break;
                 case 2:
                     System.out.println("Withdraw.");
+                    withdraw(scanner, user);
                     break;
                 case 3:
                     System.out.println("Check Balance.");

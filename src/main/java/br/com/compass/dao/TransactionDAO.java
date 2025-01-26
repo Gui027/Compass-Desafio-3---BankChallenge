@@ -38,10 +38,10 @@ public class TransactionDAO {
             // Consultar a última transação do usuário com o saldo mais recente
             String hql = "SELECT T.balance FROM Transaction T WHERE T.user.id = :userId ORDER BY T.transactionDate DESC";
             List<Double> result = session.createQuery(hql, Double.class)
-                                         .setParameter("userId", userId)
-                                         .setMaxResults(1) // Pega apenas a última transação
-                                         .getResultList();
-            
+                    .setParameter("userId", userId)
+                    .setMaxResults(1) // Pega apenas a última transação
+                    .getResultList();
+
             if (!result.isEmpty()) {
                 return result.get(0); // Retorna o saldo da última transação
             } else {
@@ -54,43 +54,82 @@ public class TransactionDAO {
             session.close();
         }
     }
-    
+
     // Método para fazer o depósito
     public boolean deposit(int userId, double amount) {
-    Session session = HibernateUtil.getSessionFactory().openSession();
-    org.hibernate.Transaction tx = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        org.hibernate.Transaction tx = null;
 
-    try {
-        tx = session.beginTransaction();
+        try {
+            tx = session.beginTransaction();
 
-        // Buscar o saldo atual
-        double currentBalance = getLastBalanceByUserId(userId);
+            // Buscar o saldo atual
+            double currentBalance = getLastBalanceByUserId(userId);
 
-        // Calcular o novo saldo
-        double newBalance = currentBalance + amount;
+            // Calcular o novo saldo
+            double newBalance = currentBalance + amount;
 
-        // Criar uma nova transação
-        Transaction transaction = new Transaction();
-        transaction.setUser(session.get(User.class, userId)); // Associar ao usuário
-        transaction.setAmount(amount);
-        transaction.setBalance(newBalance);
-        transaction.setType("Deposit"); // Tipo de transação
-        transaction.setTransactionDate(new Date()); // Data atual
+            // Criar uma nova transação
+            Transaction transaction = new Transaction();
+            transaction.setUser(session.get(User.class, userId)); // Associar ao usuário
+            transaction.setAmount(amount);
+            transaction.setBalance(newBalance);
+            transaction.setType("Deposit"); // Tipo de transação
+            transaction.setTransactionDate(new Date()); // Data atual
 
-        // Salvar a transação
-        session.save(transaction);
+            // Salvar a transação
+            session.save(transaction);
 
-        tx.commit();
-        return true;
-    } catch (Exception e) {
-        if (tx != null) {
-            tx.rollback();
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
         }
-        e.printStackTrace();
-        return false;
-    } finally {
-        session.close();
     }
-}
+
+    // Método para fazer o saque
+    public boolean withdraw(int userId, double amount) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        org.hibernate.Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            // Buscar o saldo atual
+            double currentBalance = getLastBalanceByUserId(userId);
+
+            // Calcular o novo saldo
+            double newBalance = currentBalance - amount;
+
+            // Criar uma nova transação
+            Transaction transaction = new Transaction();
+            transaction.setUser(session.get(User.class, userId));
+            transaction.setAmount(amount);
+            transaction.setBalance(newBalance);
+            transaction.setType("Withdraw");
+            transaction.setTransactionDate(new Date());
+
+            // Salvar a transação
+            session.save(transaction);
+
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+
+        }
+    }
 
 }
