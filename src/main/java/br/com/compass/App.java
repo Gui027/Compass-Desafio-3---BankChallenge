@@ -212,24 +212,54 @@ public class App {
 
     public static void extract(Scanner scanner, User user) {
         System.out.println("=== Bank Statement ===");
-    TransactionDAO transactionDAO = new TransactionDAO();
-    List<Transaction> transactions = transactionDAO.getTransactionsByUserId(user.getId());
+        TransactionDAO transactionDAO = new TransactionDAO();
+        List<Transaction> transactions = transactionDAO.getTransactionsByUserId(user.getId());
 
-    if (transactions == null || transactions.isEmpty()) {
-        System.out.println("No transactions found for this account.");
-        return;
+        if (transactions == null || transactions.isEmpty()) {
+            System.out.println("No transactions found for this account.");
+            return;
+        }
+
+        System.out.println("Date\t\t\tType\t\tAmount\t\tBalance");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        for (Transaction transaction : transactions) {
+            String date = dateFormat.format(transaction.getTransactionDate());
+            String type = transaction.getType();
+            double amount = transaction.getAmount();
+            double balance = transaction.getBalance();
+            System.out.printf("%s\t%s\t%.2f\t\t%.2f%n", date, type, amount, balance);
+        }
     }
 
-    System.out.println("Date\t\t\tType\t\tAmount\t\tBalance");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static void transfer(Scanner scanner, User user) {
+        System.out.println("=== Transfer ===");
+        try {
+            System.out.print("Enter the recipient's CPF: ");
+            String cpfTo = scanner.next();
 
-    for (Transaction transaction : transactions) {
-        String date = dateFormat.format(transaction.getTransactionDate());
-        String type = transaction.getType();
-        double amount = transaction.getAmount();
-        double balance = transaction.getBalance();
-        System.out.printf("%s\t%s\t%.2f\t\t%.2f%n", date, type, amount, balance);
-    }
+            System.out.print("Enter the amount to transfer: ");
+            double amount = scanner.nextDouble();
+            scanner.nextLine(); // consume the remaining newline
+
+            if (amount <= 0) {
+                System.out.println("Invalid amount. Transfer amount must be greater than 0.");
+                return;
+            }
+
+            TransactionDAO transactionDAO = new TransactionDAO();
+            boolean success = transactionDAO.transfer(user.getCpf(), cpfTo, amount);
+
+            if (success) {
+                System.out.println("Transfer successful!");
+            } else {
+                System.out.println("Transfer failed. Please check the details and try again.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while making the transfer. Please try again.");
+            scanner.nextLine(); // limpar o buffer em caso de erro
+        }
     }
 
     public static void bankMenu(Scanner scanner, User user) {
@@ -266,6 +296,7 @@ public class App {
                     break;
                 case 4:
                     System.out.println("Transfer.");
+                    transfer(scanner, user);
                     break;
                 case 5:
                     System.out.println("Bank Statement.");

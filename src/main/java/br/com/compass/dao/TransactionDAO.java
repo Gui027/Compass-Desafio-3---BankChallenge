@@ -148,4 +148,68 @@ public class TransactionDAO {
         }
     }
 
+    // Método para fazer transferência
+    public boolean transfer(String cpfFrom, String cpfTo, double amount) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        org.hibernate.Transaction tx = null;
+
+        try {
+            tx = session.beginTransaction();
+
+            // Buscar o user pelo cpf
+            UserDAO userDAO = new UserDAO();
+            User userFrom = userDAO.getUserByCpf(cpfFrom);
+            User userTo = userDAO.getUserByCpf(cpfTo);
+
+            // Verificar se os usuários existem
+            if (userFrom == null) {
+                System.out.println("Sender user not found. Please check the CPF.");
+                return false;
+            }
+            if (userTo == null) {
+                System.out.println("Recipient user not found. Please check the CPF.");
+                return false;
+            }
+
+            // Verificar o saldo do remetente
+            double currentBalance = getLastBalanceByUserId(userFrom.getId());
+            if (currentBalance < amount) {
+                System.out.println("Insufficient funds");
+                return false;
+            }
+
+            // Atualizar saldo do remetente
+            double newBalanceFrom = currentBalance - amount;
+            Transaction transactionFrom = new Transaction();
+            transactionFrom.setUser(userFrom);
+            transactionFrom.setAmount(-amount);
+            transactionFrom.setBalance(newBalanceFrom);
+            transactionFrom.setType("Transfer Out");
+            transactionFrom.setTransactionDate(new Date());
+            session.save(transactionFrom);
+
+            // Atualizar saldo do destinatário
+            double currentBalanceTo = getLastBalanceByUserId(userTo.getId());
+            double newBalanceTo = currentBalanceTo + amount;
+            Transaction transactionTo = new Transaction();
+            transactionTo.setUser(userTo);
+            transactionTo.setAmount(amount);
+            transactionTo.setBalance(newBalanceTo);
+            transactionTo.setType("Transfer In");
+            transactionTo.setTransactionDate(new Date());
+            session.save(transactionTo);
+
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+
+        }
+    }
 }
